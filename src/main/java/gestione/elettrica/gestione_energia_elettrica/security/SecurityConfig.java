@@ -9,11 +9,18 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
+    private final TokenFilter tokenFilter;
+
+    public SecurityConfig(TokenFilter tokenFilter) {
+        this.tokenFilter = tokenFilter;
+    }
 
     @Bean
     public PasswordEncoder getBCrypt(){
@@ -21,27 +28,19 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
-        // DISABILITO IL FORM DI DEFAULT
-
-        httpSecurity.formLogin(formLogin -> formLogin.disable() );
-
-        //DISABILITO LE SESSIONI
-
+        httpSecurity.formLogin(formLogin -> formLogin.disable());
         httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        //DISABILITIAMO ANCHE DA ATTACCHI CSRF
-
         httpSecurity.csrf(csrf -> csrf.disable());
+        
+        httpSecurity.authorizeHttpRequests(req -> req
+                .requestMatchers("/auth/**").permitAll()
+                .anyRequest().authenticated()
+        );
 
-        //ELIMINO I CONTROLLI AUTOMATICI DI SPRING SECURITY - quindi poi non interverrà sulle richieste
-
-        httpSecurity.authorizeHttpRequests(req -> req.requestMatchers("/auth/**").permitAll());
-
-        //IMPLEMENTO I MIEI CONTROLLI BASATI SUI TOKEN
+        httpSecurity.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
-
     }
 }
