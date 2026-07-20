@@ -33,7 +33,7 @@ public class SecurityConfig {
         httpSecurity.formLogin(formLogin -> formLogin.disable());
         httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         httpSecurity.csrf(csrf -> csrf.disable());
-        
+
         httpSecurity.authorizeHttpRequests(req -> req
                 .requestMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated()
