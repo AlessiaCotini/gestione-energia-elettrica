@@ -37,10 +37,10 @@ public class UserService {
         nuovo.setName(body.name());
         nuovo.setSurname(body.surname());
 
-        Role defaultRole = roleRepository.findByNomeRuolo("USER")
+        Role ruolo = roleRepository.findByNomeRuolo("USER")
                 .orElseThrow(() -> new NotFound("Ruolo USER non trovato"));
 
-        nuovo.setRuoli(List.of(defaultRole));
+        nuovo.setRuoli(List.of(ruolo));
 
         return userRepository.save(nuovo);
     }
