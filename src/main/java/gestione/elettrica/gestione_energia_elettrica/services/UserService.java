@@ -5,6 +5,7 @@ import gestione.elettrica.gestione_energia_elettrica.eccezioni.NotFound;
 import gestione.elettrica.gestione_energia_elettrica.entities.Role;
 import gestione.elettrica.gestione_energia_elettrica.entities.User;
 import gestione.elettrica.gestione_energia_elettrica.payloads.UserDTO;
+import gestione.elettrica.gestione_energia_elettrica.repositories.RoleRepository;
 import gestione.elettrica.gestione_energia_elettrica.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,29 +16,38 @@ import java.util.UUID;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder bcrypt;
 
-    public UserService(UserRepository userRepository, PasswordEncoder bcrypt) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder bcrypt) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.bcrypt = bcrypt;
     }
-
 
     public User save(UserDTO body) {
         if (this.userRepository.existsByEmail(body.email())) {
             throw new AccessDenied("Email già in utilizzo");
         }
-        User nuovo = new User(
-                body.username(),
-                body.email(),
-                this.bcrypt.encode(body.password()),
-                body.ruolo().getNomeRuolo(), body.name(), body.surname());
+
+        User nuovo = new User();
+        nuovo.setUsername(body.username());
+        nuovo.setEmail(body.email());
+        nuovo.setPassword(this.bcrypt.encode(body.password()));
+        nuovo.setName(body.name());
+        nuovo.setSurname(body.surname());
+
+        Role defaultRole = roleRepository.findByNomeRuolo("USER")
+                .orElseThrow(() -> new NotFound("Ruolo USER non trovato"));
+
+        nuovo.setRuoli(List.of(defaultRole));
+
         return userRepository.save(nuovo);
     }
 
     public User findById(UUID userId) {
         return this.userRepository.findById(userId)
-                .orElseThrow(() -> new NotFound("Utente non trovato"));
+                .orElseThrow(() -> new NotFound("Utente con ID " + userId + " non trovato"));
     }
 
     public User findByEmail(String email) {
@@ -53,13 +63,16 @@ public class UserService {
         User trovato = this.findById(userId);
 
         if (!trovato.getEmail().equals(body.email()) && this.userRepository.existsByEmail(body.email())) {
-            throw new NotFound("Email già in utilizzo") {
-            };
+            throw new AccessDenied("Email già in utilizzo");
         }
+
         trovato.setUsername(body.username());
         trovato.setEmail(body.email());
-        trovato.setPassword(this.bcrypt.encode(body.password()));
-        trovato.setRuoli((List<Role>) body.ruolo());
+        if (body.password() != null && !body.password().isBlank()) {
+            trovato.setPassword(this.bcrypt.encode(body.password()));
+        }
+        trovato.setName(body.name());
+        trovato.setSurname(body.surname());
 
         return this.userRepository.save(trovato);
     }
