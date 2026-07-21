@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -40,7 +41,7 @@ public class UserService {
         Role ruolo = roleRepository.findByNomeRuolo("USER")
                 .orElseThrow(() -> new NotFound("Ruolo USER non trovato"));
 
-        nuovo.setRuoli(List.of(ruolo));
+        nuovo.setRuoli(Set.of(ruolo));
 
         return userRepository.save(nuovo);
     }
@@ -81,5 +82,7 @@ public class UserService {
         User trovato = this.findById(userId);
         this.userRepository.delete(trovato);
     }
+
+    //ADMIN DEVE POTER INVIARE LA MAIL
 }
 
