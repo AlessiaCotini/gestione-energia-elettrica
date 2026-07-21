@@ -7,9 +7,10 @@ import gestione.elettrica.gestione_energia_elettrica.entities.User;
 import gestione.elettrica.gestione_energia_elettrica.payloads.UserResponseDTO;
 import gestione.elettrica.gestione_energia_elettrica.repositories.RoleRepository;
 import gestione.elettrica.gestione_energia_elettrica.repositories.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -24,6 +25,11 @@ public class UserService {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.bcrypt = bcrypt;
+    }
+
+
+    public Page<User> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     public User save(UserResponseDTO body) {
@@ -56,9 +62,6 @@ public class UserService {
                 .orElseThrow(() -> new NotFound("Email non trovata"));
     }
 
-    public List<User> findAll() {
-        return this.userRepository.findAll();
-    }
 
     public User findByIdAndUpdate(UUID userId, UserResponseDTO body) {
         User trovato = this.findById(userId);

@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,13 +32,11 @@ public class UserController {
     // LISTA UTENTI
     @GetMapping
     @PreAuthorize("hasAuthority('GESTISCI_UTENTI')")
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        List<UserResponseDTO> users = userService.findAll()
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(users);
-    }
+    public ResponseEntity<Page<UserResponseDTO>> getAllUsers(Pageable pageable) {
+        Page<UserResponseDTO> usersPage = userService.findAll(pageable)
+                .map(this::mapToDTO);
+
+        return ResponseEntity.ok(usersPage);    }
 
     // ASSEGNA RUOLI
     @PutMapping("/{userId}/ruoli")
