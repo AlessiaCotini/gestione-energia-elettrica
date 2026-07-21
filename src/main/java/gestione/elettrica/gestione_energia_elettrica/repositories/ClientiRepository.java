@@ -11,6 +11,14 @@ import java.util.UUID;
 
 public interface ClientiRepository extends JpaRepository<Cliente, UUID> {
 
+    boolean existsByPIva(String pIva);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByPec(String pec);
+
+    boolean existsByTelefono(String telefono);
+
     Page<Cliente> findByFatturatoAnnuale(double fatturatoAnnuale, Pageable pageable);
 
     Page<Cliente> findByDataInserimento(LocalDate dataInserimento, Pageable pageable);

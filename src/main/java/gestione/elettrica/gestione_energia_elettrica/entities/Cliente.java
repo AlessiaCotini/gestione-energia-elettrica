@@ -16,6 +16,7 @@ public class Cliente {
 
     @Id
     @GeneratedValue
+    @Setter(AccessLevel.NONE)
     private UUID id;
 
     @Enumerated(EnumType.STRING)
