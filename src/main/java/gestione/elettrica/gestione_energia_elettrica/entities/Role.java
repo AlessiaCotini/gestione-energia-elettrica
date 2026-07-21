@@ -5,10 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.catalina.User;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @NoArgsConstructor
@@ -26,9 +25,18 @@ public class Role {
     private String nomeRuolo;
 
     @ManyToMany(mappedBy = "ruoli")
-    private List<User> utenti = new ArrayList<>();
+    private Set<User> utenti = new HashSet<>();
 
     public Role(String nomeRuolo) {
         this.nomeRuolo = nomeRuolo;
     }
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "ruoli_autorizzazioni",
+            joinColumns = @JoinColumn(name = "ruoloId"),
+            inverseJoinColumns = @JoinColumn(name = "autorizzazioneId")
+    )
+    private
+    Set<Autorizzazione> autorizzazioni = new HashSet<>();
 }

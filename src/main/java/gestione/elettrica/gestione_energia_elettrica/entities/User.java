@@ -10,10 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+
 @Entity
 @NoArgsConstructor
 @Getter
@@ -43,10 +41,10 @@ public class User implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "utenti_ruoli",
-            joinColumns = @JoinColumn(name = "userId"),
-            inverseJoinColumns = @JoinColumn(name = "roleId")
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private List<Role> ruoli = new ArrayList<>();
+    private Set<Role> ruoli = new HashSet<>();
 
     public User(String username, String email, String password, String name, String surname, String avatar) {
         this.username = username;
@@ -59,9 +57,17 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.ruoli.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getNomeRuolo()))
-                .toList();
+        Set<GrantedAuthority> authorities = new HashSet<>();
+
+        for (Role ruolo : this.ruoli) {
+            authorities.add(new SimpleGrantedAuthority(ruolo.getNomeRuolo()));
+
+            for (Autorizzazione a : ruolo.getAutorizzazioni()) {
+                authorities.add(new SimpleGrantedAuthority(a.getNome()));
+            }
+        }
+
+        return authorities;
     }
 
     @Override
