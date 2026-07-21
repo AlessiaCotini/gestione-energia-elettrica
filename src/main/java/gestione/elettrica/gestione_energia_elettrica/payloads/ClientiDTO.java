@@ -1,6 +1,6 @@
 package gestione.elettrica.gestione_energia_elettrica.payloads;
 
-import gestione.elettrica.gestione_energia_elettrica.entities.TipoCliente;
+import gestione.elettrica.gestione_energia_elettrica.enums.TipoCliente;
 import jakarta.validation.constraints.*;
 
 import java.util.UUID;

@@ -1,5 +1,6 @@
 package gestione.elettrica.gestione_energia_elettrica.entities;
 
+import gestione.elettrica.gestione_energia_elettrica.enums.TipoCliente;
 import jakarta.persistence.*;
 import lombok.*;
 
