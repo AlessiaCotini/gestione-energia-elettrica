@@ -1,10 +1,74 @@
 package gestione.elettrica.gestione_energia_elettrica.controllers;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import gestione.elettrica.gestione_energia_elettrica.entities.User;
+import gestione.elettrica.gestione_energia_elettrica.payloads.AggiornoRuoloUserDTO;
+import gestione.elettrica.gestione_energia_elettrica.payloads.UserResponseDTO;
+import gestione.elettrica.gestione_energia_elettrica.services.UserService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/utenti")
 public class UserController {
-    // CREA NUOVA FATTURA - CREA NUOVO UTENTE - UPDATE
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    // OTTENGO IL MIO PROFILO
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getMyProfile(@AuthenticationPrincipal User currentUser) {
+        return ResponseEntity.ok(mapToDTO(currentUser));
+    }
+
+    // LISTA UTENTI
+    @GetMapping
+    @PreAuthorize("hasAuthority('GESTISCI_UTENTI')")
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+        List<UserResponseDTO> users = userService.findAll()
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(users);
+    }
+
+    // ASSEGNA RUOLI
+    @PutMapping("/{userId}/ruoli")
+    @PreAuthorize("hasAuthority('ASSEGNA_RUOLI')")
+    public ResponseEntity<UserResponseDTO> updateUserRoles(
+            @PathVariable UUID userId,
+            @RequestBody AggiornoRuoloUserDTO dto) {
+
+        User updatedUser = userService.updateUserRoles(userId, dto.roleIds());
+        return ResponseEntity.ok(mapToDTO(updatedUser));
+    }
+
+    // CONVERTO User IN DTO
+    private UserResponseDTO mapToDTO(User user) {
+        Set<String> ruoliNames = user.getRuoli().stream()
+                .map(r -> r.getNomeRuolo())
+                .collect(Collectors.toSet());
+
+        Set<String> autorizzazioniNames = user.getAuthorities().stream()
+                .map(a -> a.getAuthority())
+                .collect(Collectors.toSet());
+
+        return new UserResponseDTO(
+                user.getUsername(),
+                user.getEmail(),
+                user.getName(),
+                user.getSurname(),
+                user.getAvatar(),
+                ruoliNames,
+                autorizzazioniNames
+        );
+    }
 }

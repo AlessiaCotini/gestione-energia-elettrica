@@ -2,7 +2,7 @@ package gestione.elettrica.gestione_energia_elettrica.controllers;
 
 import gestione.elettrica.gestione_energia_elettrica.entities.User;
 import gestione.elettrica.gestione_energia_elettrica.payloads.LoginRispostaDto;
-import gestione.elettrica.gestione_energia_elettrica.payloads.UserDTO;
+import gestione.elettrica.gestione_energia_elettrica.payloads.UserResponseDTO;
 import gestione.elettrica.gestione_energia_elettrica.payloads.UserLoginDTO;
 import gestione.elettrica.gestione_energia_elettrica.services.AuthService;
 import gestione.elettrica.gestione_energia_elettrica.services.UserService;
@@ -30,7 +30,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public User register(@RequestBody @Validated UserDTO body) {
+    public User register(@RequestBody @Validated UserResponseDTO body) {
         return userService.save(body);
     }
 }
