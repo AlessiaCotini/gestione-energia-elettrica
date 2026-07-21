@@ -1,5 +1,6 @@
 package gestione.elettrica.gestione_energia_elettrica.repositories;
 
+import gestione.elettrica.gestione_energia_elettrica.entities.Cliente;
 import gestione.elettrica.gestione_energia_elettrica.entities.Fattura;
 import gestione.elettrica.gestione_energia_elettrica.entities.StatoFattura;
 import org.springframework.data.domain.Page;
