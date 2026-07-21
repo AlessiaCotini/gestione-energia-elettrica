@@ -1,5 +1,7 @@
 package gestione.elettrica.gestione_energia_elettrica.services;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import gestione.elettrica.gestione_energia_elettrica.entities.Cliente;
 import gestione.elettrica.gestione_energia_elettrica.entities.Indirizzo;
 import gestione.elettrica.gestione_energia_elettrica.gestioneerrori.BadRequestException;
@@ -13,8 +15,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -23,10 +28,13 @@ import java.util.UUID;
 public class ClientiService {
     private ClientiRepository clientiRepository;
     private IndirizzoService indirizzoService;
+    private final Cloudinary cloudinary;
 
-    public ClientiService(ClientiRepository clientiRepository, IndirizzoRepository indirizzoRepository) {
+
+    public ClientiService(ClientiRepository clientiRepository, IndirizzoService indirizzoService, Cloudinary cloudinary) {
         this.clientiRepository = clientiRepository;
         this.indirizzoService = indirizzoService;
+        this.cloudinary = cloudinary;
     }
 
     public Cliente save(ClientiDTO payload) {
@@ -49,14 +57,15 @@ public class ClientiService {
                 payload.pIva(),
                 payload.email(),
                 null,
+                payload.fatturatoAnnuale(),
                 payload.pec(),
                 payload.telefono(),
                 payload.emailContatto(),
                 payload.nomeContatto(),
                 payload.cognomeContatto(),
                 payload.telefonoContatto(),
-                this.indirizzoService.findById(payload.sedeOperativa()),
-                this.indirizzoService.findById(payload.sedeLegale())
+                indirizzoService.findById(payload.sedeOperativa()),
+                indirizzoService.findById(payload.sedeLegale())
         );
 
         return clientiRepository.save(cliente);
@@ -92,5 +101,18 @@ public class ClientiService {
     public Page<Cliente> filterByRagioneSociale(String ragioneSociale, int page, int size, String sortBy) {
         return clientiRepository.findByRagioneSocialeContaining(ragioneSociale, PageRequest.of(page, size, Sort.by(sortBy)));
     }
+
+    public Cliente uploadAvatar(UUID clienteId, MultipartFile file) throws IOException {
+        Cliente cliente = clientiRepository.findById(clienteId)
+                .orElseThrow(() -> new RuntimeException("Cliente non trovato"));
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+        String url = uploadResult.get("secure_url").toString();
+        String publicId = uploadResult.get("public_id").toString();
+
+        cliente.setLogoAziendale(url);
+
+        return clientiRepository.save(cliente);
+    }
+
 
 }

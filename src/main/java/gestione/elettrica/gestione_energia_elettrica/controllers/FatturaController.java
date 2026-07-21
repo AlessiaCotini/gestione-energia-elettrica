@@ -6,7 +6,7 @@ import gestione.elettrica.gestione_energia_elettrica.entities.StatoFattura;
 import gestione.elettrica.gestione_energia_elettrica.payloads.FatturaDTO;
 import gestione.elettrica.gestione_energia_elettrica.payloads.FatturaRespDTO;
 import gestione.elettrica.gestione_energia_elettrica.payloads.UpdateFatturaDTO;
-import gestione.elettrica.gestione_energia_elettrica.services.ClienteService;
+import gestione.elettrica.gestione_energia_elettrica.services.ClientiService;
 import gestione.elettrica.gestione_energia_elettrica.services.FatturaService;
 import gestione.elettrica.gestione_energia_elettrica.services.StatoFatturaService;
 import org.springframework.data.domain.Page;
@@ -26,10 +26,10 @@ import java.util.UUID;
 public class FatturaController {
 
     private final FatturaService fatturaService;
-    private final ClienteService clienteService;
+    private final ClientiService clienteService;
     private final StatoFatturaService statoFatturaService;
 
-    public FatturaController(FatturaService fatturaService, ClienteService clienteService, StatoFatturaService statoFatturaService) {
+    public FatturaController(FatturaService fatturaService, ClientiService clienteService, StatoFatturaService statoFatturaService) {
         this.fatturaService = fatturaService;
         this.clienteService = clienteService;
         this.statoFatturaService = statoFatturaService;
