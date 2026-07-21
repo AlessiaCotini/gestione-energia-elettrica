@@ -23,6 +23,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue
+    @Column(name = "user_id")
     private UUID userId;
 
     @Column(nullable = false, unique = true)
