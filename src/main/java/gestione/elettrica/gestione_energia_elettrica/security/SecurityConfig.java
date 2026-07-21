@@ -16,14 +16,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final TokenFilter tokenFilter;
-
-    public SecurityConfig(TokenFilter tokenFilter) {
-        this.tokenFilter = tokenFilter;
-    }
 
     @Bean
-    public PasswordEncoder getBCrypt(){
+    public PasswordEncoder getBCrypt() {
         return new BCryptPasswordEncoder(12);
     }
 
@@ -31,15 +26,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity.formLogin(formLogin -> formLogin.disable());
-        httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        httpSecurity.sessionManagement(sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
         httpSecurity.csrf(csrf -> csrf.disable());
 
-        httpSecurity.authorizeHttpRequests(req -> req
-                .requestMatchers("/auth/**").permitAll()
-                .anyRequest().authenticated()
-        );
-
-        httpSecurity.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.authorizeHttpRequests(req -> req.requestMatchers("/**").permitAll());
 
         return httpSecurity.build();
     }

@@ -18,4 +18,10 @@ public class AutorizzazzioniConfig
     @Bean(name = "assegna_ruoli")
     public Autorizzazione getNuoviRuoli(){return new Autorizzazione("ASSEGNA_RUOLI");}
 
+    @Bean(name = "crea_fattura")
+    public Autorizzazione getNuovaFattura(){return new Autorizzazione("CREA_FATTURA");}
+
+    @Bean(name = "modifica_fattura")
+    public Autorizzazione getFatturaModificata(){return new Autorizzazione("MODIFICA_FATTURA");}
+
 }
