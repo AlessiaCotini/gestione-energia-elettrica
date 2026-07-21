@@ -4,7 +4,7 @@ import gestione.elettrica.gestione_energia_elettrica.eccezioni.AccessDenied;
 import gestione.elettrica.gestione_energia_elettrica.eccezioni.NotFound;
 import gestione.elettrica.gestione_energia_elettrica.entities.Role;
 import gestione.elettrica.gestione_energia_elettrica.entities.User;
-import gestione.elettrica.gestione_energia_elettrica.payloads.UserDTO;
+import gestione.elettrica.gestione_energia_elettrica.payloads.UserResponseDTO;
 import gestione.elettrica.gestione_energia_elettrica.repositories.RoleRepository;
 import gestione.elettrica.gestione_energia_elettrica.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +26,7 @@ public class UserService {
         this.bcrypt = bcrypt;
     }
 
-    public User save(UserDTO body) {
+    public User save(UserResponseDTO body) {
         if (this.userRepository.existsByEmail(body.email())) {
             throw new AccessDenied("Email già in utilizzo");
         }
@@ -60,7 +60,7 @@ public class UserService {
         return this.userRepository.findAll();
     }
 
-    public User findByIdAndUpdate(UUID userId, UserDTO body) {
+    public User findByIdAndUpdate(UUID userId, UserResponseDTO body) {
         User trovato = this.findById(userId);
 
         if (!trovato.getEmail().equals(body.email()) && this.userRepository.existsByEmail(body.email())) {
@@ -81,6 +81,18 @@ public class UserService {
     public void findByIdAndDelete(UUID userId) {
         User trovato = this.findById(userId);
         this.userRepository.delete(trovato);
+    }
+
+    public User updateUserRoles(UUID userId, Set<UUID> roleId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        List<Role> newRoles = roleRepository.findAllById(roleId);
+
+        user.getRuoli().clear();
+        user.getRuoli().addAll(newRoles);
+
+        return userRepository.save(user);
     }
 
     //ADMIN DEVE POTER INVIARE LA MAIL
