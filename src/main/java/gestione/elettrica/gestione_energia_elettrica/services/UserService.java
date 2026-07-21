@@ -1,5 +1,8 @@
 package gestione.elettrica.gestione_energia_elettrica.services;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import gestione.elettrica.gestione_energia_elettrica.configuration.CloudinaryConfig;
 import gestione.elettrica.gestione_energia_elettrica.eccezioni.AccessDenied;
 import gestione.elettrica.gestione_energia_elettrica.eccezioni.NotFound;
 import gestione.elettrica.gestione_energia_elettrica.entities.Role;
@@ -11,7 +14,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -20,12 +27,28 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder bcrypt;
+    private final Cloudinary cloudinaryConfig;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder bcrypt) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder bcrypt, CloudinaryConfig cloudinaryConfig, Cloudinary cloudinaryConfig1) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.bcrypt = bcrypt;
+        this.cloudinaryConfig = cloudinaryConfig1;
     }
+
+    public User uploadAvatar(UUID userId, MultipartFile file) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        Map uploadResult = cloudinaryConfig.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+        String url = uploadResult.get("secure_url").toString();
+        String publicId = uploadResult.get("public_id").toString();
+
+        user.setAvatar(url);
+
+        return userRepository.save(user);
+    }
+
 
 
     public Page<User> findAll(Pageable pageable) {

@@ -72,6 +72,7 @@ public class ClientiService {
     }
 
 
+
     public Cliente findById(UUID id) {
         return clientiRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Cliente con ID " + id + " non trovato!"));
