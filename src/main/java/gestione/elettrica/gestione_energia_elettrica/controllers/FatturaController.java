@@ -39,9 +39,10 @@ public class FatturaController {
     @PreAuthorize("hasAuthority('READ_FATTURA')")
     public Page<Fattura> getAllFatture(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "data") String orderBy
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, orderBy);
 
         return fatturaService.findAll(pageable);
     }
