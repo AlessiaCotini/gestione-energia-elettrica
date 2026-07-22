@@ -2,13 +2,11 @@ package gestione.elettrica.gestione_energia_elettrica.services;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import gestione.elettrica.gestione_energia_elettrica.eccezioni.BadRequest;
+import gestione.elettrica.gestione_energia_elettrica.eccezioni.NotFound;
 import gestione.elettrica.gestione_energia_elettrica.entities.Cliente;
-import gestione.elettrica.gestione_energia_elettrica.entities.Indirizzo;
-import gestione.elettrica.gestione_energia_elettrica.gestioneerrori.BadRequestException;
-import gestione.elettrica.gestione_energia_elettrica.gestioneerrori.NotFoundException;
 import gestione.elettrica.gestione_energia_elettrica.payloads.ClientiDTO;
 import gestione.elettrica.gestione_energia_elettrica.repositories.ClientiRepository;
-import gestione.elettrica.gestione_energia_elettrica.repositories.IndirizzoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,9 +24,9 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class ClientiService {
+    private final Cloudinary cloudinary;
     private ClientiRepository clientiRepository;
     private IndirizzoService indirizzoService;
-    private final Cloudinary cloudinary;
 
 
     public ClientiService(ClientiRepository clientiRepository, IndirizzoService indirizzoService, Cloudinary cloudinary) {
@@ -39,16 +37,16 @@ public class ClientiService {
 
     public Cliente save(ClientiDTO payload) {
         if (this.clientiRepository.existsByPIva(payload.pIva())) {
-            throw new BadRequestException("La partita IVA " + payload.pIva() + " risulta già registrata!");
+            throw new BadRequest("La partita IVA " + payload.pIva() + " risulta già registrata!");
         }
         if (this.clientiRepository.existsByEmail(payload.email())) {
-            throw new BadRequestException("La email " + payload.email() + " risulta già registrata!");
+            throw new BadRequest("La email " + payload.email() + " risulta già registrata!");
         }
         if (this.clientiRepository.existsByPec(payload.pec())) {
-            throw new BadRequestException("La pec " + payload.pec() + " risulta già registrata!");
+            throw new BadRequest("La pec " + payload.pec() + " risulta già registrata!");
         }
         if (this.clientiRepository.existsByTelefono(payload.telefono())) {
-            throw new BadRequestException("Il telefono " + payload.telefono() + " risulta già registrato!");
+            throw new BadRequest("Il telefono " + payload.telefono() + " risulta già registrato!");
         }
 
         Cliente cliente = new Cliente(
@@ -81,10 +79,9 @@ public class ClientiService {
     }
 
 
-
     public Cliente findById(UUID id) {
         return clientiRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Cliente con ID " + id + " non trovato!"));
+                .orElseThrow(() -> new NotFound("Cliente con ID " + id + " non trovato!"));
     }
 
     public Page<Cliente> filterByFatturato(double fatturato, int page, int size, String sortBy) {
