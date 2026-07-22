@@ -89,54 +89,38 @@ public class FatturaController {
         return fatturaService.update(id, fattura);
     }
 
-    @GetMapping("/cliente/{clienteId}")
+    @GetMapping
     @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
-    public List<Fattura> findByCliente(@PathVariable UUID clienteId) {
+    public List<Fattura> search(
 
-        Cliente cliente = clienteService.findById(clienteId);
+            @RequestParam(required = false)
+            UUID clienteId,
+            @RequestParam(required = false)
+            UUID statoId,
+            @RequestParam(required = false)
+            LocalDate data,
+            @RequestParam(required = false)
+            LocalDate start,
+            @RequestParam(required = false)
+            LocalDate end,
+            @RequestParam(required = false)
+            BigDecimal min,
+            @RequestParam(required = false)
+            BigDecimal max,
+            @RequestParam(required = false)
+            Integer anno
+    ) {
 
-        return fatturaService.findByCliente(cliente);
-    }
-
-    @GetMapping("/stato/{statoId}")
-    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
-    public List<Fattura> findByStato(@PathVariable UUID statoId) {
-
-        StatoFattura stato = statoFatturaService.findById(statoId);
-
-        return fatturaService.findByStato(stato);
-    }
-
-    @GetMapping("/data")
-    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
-    public List<Fattura> findByData(@RequestParam LocalDate data) {
-
-        return fatturaService.findByData(data);
-    }
-
-    @GetMapping("/periodo")
-    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
-    public List<Fattura> findByPeriodo(
-            @RequestParam LocalDate start,
-            @RequestParam LocalDate end) {
-
-        return fatturaService.findByPeriodo(start, end);
-    }
-
-    @GetMapping("/importo")
-    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
-    public List<Fattura> findByImporto(
-            @RequestParam BigDecimal min,
-            @RequestParam BigDecimal max) {
-
-        return fatturaService.findByImporto(min, max);
-    }
-
-    @GetMapping("/anno/{anno}")
-    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
-    public List<Fattura> findByAnno(@PathVariable int anno) {
-
-        return fatturaService.findByAnno(anno);
+        return fatturaService.search(
+                clienteId,
+                statoId,
+                data,
+                start,
+                end,
+                min,
+                max,
+                anno
+        );
     }
 
     @DeleteMapping("/{id}")

@@ -87,7 +87,7 @@ public class Fattura {
 
     @Override
     public String toString() {
-        return "FatturaRepository{" +
+        return "Fattura{" +
                 "id=" + id +
                 ", data=" + data +
                 ", importo=" + importo +
