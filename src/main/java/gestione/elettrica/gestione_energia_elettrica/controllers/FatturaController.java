@@ -34,7 +34,7 @@ public class FatturaController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('READ_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
     public Page<Fattura> getAllFatture(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -44,13 +44,13 @@ public class FatturaController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('READ_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
     public Fattura getFatturaById(@PathVariable UUID id) {
         return fatturaService.findById(id);
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('CREATE_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('CREATE_FATTURA','ADMIN')")
     public FatturaRespDTO save(@RequestBody @Validated FatturaDTO body) {
 
         Cliente cliente = clienteService.findById(body.clienteId());
@@ -70,7 +70,7 @@ public class FatturaController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('UPDATE_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('UPDATE_FATTURA','ADMIN')")
     public Fattura update(
             @PathVariable UUID id,
             @RequestBody @Validated UpdateFatturaDTO body) {
@@ -90,7 +90,7 @@ public class FatturaController {
     }
 
     @GetMapping("/cliente/{clienteId}")
-    @PreAuthorize("hasAuthority('READ_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
     public List<Fattura> findByCliente(@PathVariable UUID clienteId) {
 
         Cliente cliente = clienteService.findById(clienteId);
@@ -99,7 +99,7 @@ public class FatturaController {
     }
 
     @GetMapping("/stato/{statoId}")
-    @PreAuthorize("hasAuthority('READ_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
     public List<Fattura> findByStato(@PathVariable UUID statoId) {
 
         StatoFattura stato = statoFatturaService.findById(statoId);
@@ -108,14 +108,14 @@ public class FatturaController {
     }
 
     @GetMapping("/data")
-    @PreAuthorize("hasAuthority('READ_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
     public List<Fattura> findByData(@RequestParam LocalDate data) {
 
         return fatturaService.findByData(data);
     }
 
     @GetMapping("/periodo")
-    @PreAuthorize("hasAuthority('READ_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
     public List<Fattura> findByPeriodo(
             @RequestParam LocalDate start,
             @RequestParam LocalDate end) {
@@ -124,7 +124,7 @@ public class FatturaController {
     }
 
     @GetMapping("/importo")
-    @PreAuthorize("hasAuthority('READ_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
     public List<Fattura> findByImporto(
             @RequestParam BigDecimal min,
             @RequestParam BigDecimal max) {
@@ -133,14 +133,14 @@ public class FatturaController {
     }
 
     @GetMapping("/anno/{anno}")
-    @PreAuthorize("hasAuthority('READ_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
     public List<Fattura> findByAnno(@PathVariable int anno) {
 
         return fatturaService.findByAnno(anno);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('DELETE_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('DELETE_FATTURA','ADMIN')")
     public void delete(@PathVariable UUID id) {
         fatturaService.delete(id);
     }

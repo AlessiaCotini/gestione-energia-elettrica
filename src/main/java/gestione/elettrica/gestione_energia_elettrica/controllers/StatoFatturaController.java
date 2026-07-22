@@ -23,19 +23,19 @@ public class StatoFatturaController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('READ_STATO_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('READ_STATO_FATTURA','ADMIN')")
     public List<StatoFattura> getAll() {
         return statoFatturaService.findAll();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('READ_STATO_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('READ_STATO_FATTURA','ADMIN')")
     public StatoFattura getById(@PathVariable UUID id) {
         return statoFatturaService.findById(id);
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('CREATE_STATO_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('CREATE_STATO_FATTURA','ADMIN')")
     public StatoFatturaRespDTO save(@RequestBody @Validated StatoFatturaDTO body) {
 
         StatoFattura stato = new StatoFattura();
@@ -47,7 +47,7 @@ public class StatoFatturaController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('UPDATE_STATO_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('UPDATE_STATO_FATTURA','ADMIN')")
     public StatoFattura update(
             @PathVariable UUID id,
             @RequestBody @Validated UpdateStatoFatturaDTO body) {
@@ -59,7 +59,7 @@ public class StatoFatturaController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('DELETE_STATO_FATTURA')")
+    @PreAuthorize("hasAnyAuthority('DELETE_STATO_FATTURA','ADMIN')")
     public void delete(@PathVariable UUID id) {
         statoFatturaService.delete(id);
     }
