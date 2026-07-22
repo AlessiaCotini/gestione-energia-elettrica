@@ -1,23 +1,27 @@
 package gestione.elettrica.gestione_energia_elettrica.runners;
 
 import gestione.elettrica.gestione_energia_elettrica.entities.Autorizzazione;
+import gestione.elettrica.gestione_energia_elettrica.entities.Comune;
+import gestione.elettrica.gestione_energia_elettrica.entities.Indirizzo;
 import gestione.elettrica.gestione_energia_elettrica.entities.Role;
-import gestione.elettrica.gestione_energia_elettrica.repositories.AutorizzazioneRepository;
-import gestione.elettrica.gestione_energia_elettrica.repositories.ComuneRepository;
-import gestione.elettrica.gestione_energia_elettrica.repositories.ProvinciaRepository;
-import gestione.elettrica.gestione_energia_elettrica.repositories.RoleRepository;
+import gestione.elettrica.gestione_energia_elettrica.repositories.*;
 import gestione.elettrica.gestione_energia_elettrica.services.ImportCsvService;
+import jakarta.persistence.PrePersist;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
 public class CsvRunner implements CommandLineRunner {
+
+
 
     private final ImportCsvService importCsvService;
     private final ProvinciaRepository provinciaRepository;
@@ -25,10 +29,12 @@ public class CsvRunner implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
     private final AutorizzazioneRepository autorizzazioneRepository;
+    private final IndirizzoRepository indirizzoRepository;
 
     @Override
     @Transactional
     public void run(String... args) throws IOException {
+
 
         if (provinciaRepository.count() == 0) {
             importCsvService.importaProvince();
@@ -38,8 +44,10 @@ public class CsvRunner implements CommandLineRunner {
         }
 
         initRuoliEAutorizzazioni();
+        initIndirizzi();
     }
 
+    @PrePersist
     private void initRuoliEAutorizzazioni() {
 
         if (roleRepository.count() > 0) {
@@ -78,6 +86,40 @@ public class CsvRunner implements CommandLineRunner {
                 gestisciUtenti, assegnaRuoli, clientiCreate, clientiUpdate
         ));
         roleRepository.save(adminRole);
+    }
+
+    private void initIndirizzi() {
+        System.out.println("Controllo se inserire indirizzi...");
+        long countIndirizzi = indirizzoRepository.count();
+        System.out.println("Indirizzi attuali nel DB: " + countIndirizzi);
+
+        if (countIndirizzi == 0) {
+            List<Comune> comuni = comuneRepository.findAll();
+            System.out.println("Comuni trovati nel DB: " + comuni.size());
+
+            if (comuni.isEmpty()) {
+                System.err.println("IMPOSSIBILE CREARE INDIRIZZI: La tabella dei comuni è VUOTA!");
+                return;
+            }
+
+            Random random = new Random();
+            List<String> vie = List.of("Via Roma", "Corso Vittorio Emanuele", "Via Milano", "Via Garibaldi", "Via Dante Alighieri");
+
+            for (int i = 0; i < 5; i++) {
+                Comune comuneCasuale = comuni.get(random.nextInt(comuni.size()));
+
+                Indirizzo indirizzo = new Indirizzo();
+                indirizzo.setVia(vie.get(i));
+                indirizzo.setCivico(String.valueOf((i + 1) * 12));
+                indirizzo.setLocalita("Centro");
+                indirizzo.setCap(15478);
+                indirizzo.setComune(comuneCasuale);
+
+                indirizzoRepository.save(indirizzo);
+            }
+
+            System.out.println("Indirizzi salvati correttamente!");
+        }
     }
 
     private Autorizzazione createAutorizzazioneIfNotFound(String nome) {

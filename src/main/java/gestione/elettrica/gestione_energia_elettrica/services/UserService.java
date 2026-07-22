@@ -123,6 +123,5 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    //ADMIN DEVE POTER INVIARE LA MAIL
 }
 

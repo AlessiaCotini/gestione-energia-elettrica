@@ -1,0 +1,48 @@
+REGISTRO USER
+POST
+http://localhost:3001/auth/register
+{
+  "username": "ale.coti",
+  "email": "alessia.cotini@test.com",
+  "password": "paaaass22!",
+  "name": "Ale",
+  "surname": "Coti",
+  "avatar": "https://example.com/avatar.jpg"
+}
+--------------------------------OK
+LOGGO CON USER
+POST
+http://localhost:3001/auth/login
+{
+   "email": "alessia.cotini@test.com",
+  "password": "paaaass22!"
+}
+{
+    "accessToken": ""
+}
+--------------------------------OK
+VISUALIZZO IL MIO PROFILO
+GET
+http://localhost:3001/utenti/me
++ TOKEN DEL TEST PRECEDENTE
+--------------------------------OK
+VISUALIZZO GLI UTENTI
+NEL DB CAMBIO ID_USER A ID_ADMIN COLLEGATO AL MIO PROFILO PER L'AUTORIZZAZIONE
+GET
+http://localhost:3001/utenti?page=0&size=10
++ TOKEN ("ADMIN")
+--------------------------------OK
+AGGIORNO RUOLO UTENTE
+PUT
+http://localhost:3001/utenti/49a3ce6d-04d4-4810-afba-be0b44488a51/ruoli
+{
+  "roleIds": [
+    "c0a80101-0000-0000-0000-000000000001"
+  ]
+}
+--------------------------------OK
+GET
+http://localhost:3001/indirizzi
+ok---> VEDERE COME POPOLARE INDIRIZZI ALTRIMENTI IMPOSSIBILE ANDARE AVANTI
+
+
