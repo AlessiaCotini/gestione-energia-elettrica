@@ -7,11 +7,13 @@ import gestione.elettrica.gestione_energia_elettrica.eccezioni.NotFound;
 import gestione.elettrica.gestione_energia_elettrica.entities.Cliente;
 import gestione.elettrica.gestione_energia_elettrica.payloads.ClientiDTO;
 import gestione.elettrica.gestione_energia_elettrica.repositories.ClientiRepository;
+import gestione.elettrica.gestione_energia_elettrica.specifications.ClientiSpecifications;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,8 +27,8 @@ import java.util.UUID;
 @Slf4j
 public class ClientiService {
     private final Cloudinary cloudinary;
-    private ClientiRepository clientiRepository;
-    private IndirizzoService indirizzoService;
+    private final ClientiRepository clientiRepository;
+    private final IndirizzoService indirizzoService;
 
 
     public ClientiService(ClientiRepository clientiRepository, IndirizzoService indirizzoService, Cloudinary cloudinary) {
@@ -62,20 +64,11 @@ public class ClientiService {
                 payload.nomeContatto(),
                 payload.cognomeContatto(),
                 payload.telefonoContatto(),
-                indirizzoService.findById(payload.sedeOperativa()),
-                indirizzoService.findById(payload.sedeLegale())
+                payload.sedeOperativa() != null ? indirizzoService.findById(payload.sedeOperativa()) : null,
+                payload.sedeLegale() != null ? indirizzoService.findById(payload.sedeLegale()) : null
         );
 
         return clientiRepository.save(cliente);
-    }
-
-
-    public Page<Cliente> findAll(int page, int size, String sortBy) {
-        if (size > 20) size = 20;
-        if (size < 0) size = 10;
-        if (page < 0) page = 0;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
-        return clientiRepository.findAll(pageable);
     }
 
 
@@ -84,25 +77,24 @@ public class ClientiService {
                 .orElseThrow(() -> new NotFound("Cliente con ID " + id + " non trovato!"));
     }
 
-    public Page<Cliente> filterByFatturato(double fatturato, int page, int size, String sortBy) {
-        return clientiRepository.findByFatturatoAnnuale(fatturato, PageRequest.of(page, size, Sort.by(sortBy)));
-    }
+    public Page<Cliente> findAllFiltered(String ragioneSociale, Double fatturato, LocalDate dataInserimento, LocalDate dataUltimoContatto, int page, int size, String sortBy) {
+        if (size > 20) size = 20;
+        if (size < 0) size = 10;
+        if (page < 0) page = 0;
 
-    public Page<Cliente> filterByDataInserimento(LocalDate data, int page, int size, String sortBy) {
-        return clientiRepository.findByDataInserimento(data, PageRequest.of(page, size, Sort.by(sortBy)));
-    }
+        Specification<Cliente> specification = Specification.where(
+                        ClientiSpecifications.hasRagioneSociale(ragioneSociale))
+                .and(ClientiSpecifications.hasFatturatoAnnuale(fatturato))
+                .and(ClientiSpecifications.hasDataInserimento(dataInserimento))
+                .and(ClientiSpecifications.hasDataUltimoContatto(dataUltimoContatto));
 
-    public Page<Cliente> filterByDataUltimoContatto(LocalDate data, int page, int size, String sortBy) {
-        return clientiRepository.findByDataUltimoContatto(data, PageRequest.of(page, size, Sort.by(sortBy)));
-    }
-
-    public Page<Cliente> filterByRagioneSociale(String ragioneSociale, int page, int size, String sortBy) {
-        return clientiRepository.findByRagioneSocialeContaining(ragioneSociale, PageRequest.of(page, size, Sort.by(sortBy)));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return clientiRepository.findAll(specification, pageable);
     }
 
     public Cliente uploadAvatar(UUID clienteId, MultipartFile file) throws IOException {
         Cliente cliente = clientiRepository.findById(clienteId)
-                .orElseThrow(() -> new RuntimeException("Cliente non trovato"));
+                .orElseThrow(() -> new NotFound("Cliente non trovato"));
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
         String url = uploadResult.get("secure_url").toString();
         String publicId = uploadResult.get("public_id").toString();
