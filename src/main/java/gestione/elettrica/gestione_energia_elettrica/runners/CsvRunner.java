@@ -22,7 +22,7 @@ public class CsvRunner implements CommandLineRunner {
     private final ImportCsvService importCsvService;
     private final ProvinciaRepository provinciaRepository;
     private final ComuneRepository comuneRepository;
-    
+
     private final RoleRepository roleRepository;
     private final AutorizzazioneRepository autorizzazioneRepository;
 
