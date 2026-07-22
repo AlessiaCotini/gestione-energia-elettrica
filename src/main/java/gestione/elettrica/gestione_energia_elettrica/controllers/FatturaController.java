@@ -10,8 +10,6 @@ import gestione.elettrica.gestione_energia_elettrica.services.ClientiService;
 import gestione.elettrica.gestione_energia_elettrica.services.FatturaService;
 import gestione.elettrica.gestione_energia_elettrica.services.StatoFatturaService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -42,9 +40,7 @@ public class FatturaController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "data") String orderBy
     ) {
-        Pageable pageable = PageRequest.of(page, size, orderBy);
-
-        return fatturaService.findAll(pageable);
+        return fatturaService.findAll(page, size, orderBy);
     }
 
     @GetMapping("/{id}")
