@@ -1,7 +1,6 @@
 package gestione.elettrica.gestione_energia_elettrica.controllers;
 
 
-import gestione.elettrica.gestione_energia_elettrica.eccezioni.FileUpload;
 import gestione.elettrica.gestione_energia_elettrica.entities.Cliente;
 import gestione.elettrica.gestione_energia_elettrica.payloads.ClientiDTO;
 import gestione.elettrica.gestione_energia_elettrica.services.ClientiService;
@@ -28,11 +27,15 @@ public class ClientiController {
 
     @GetMapping
     public Page<Cliente> getAllClienti(
+            @RequestParam(required = false) String ragioneSociale,
+            @RequestParam(required = false) Double fatturato,
+            @RequestParam(required = false) LocalDate dataInserimento,
+            @RequestParam(required = false) LocalDate dataUltimoContatto,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "ragioneSociale") String sortBy
     ) {
-        return clientiService.findAll(page, size, sortBy);
+        return clientiService.findAllFiltered(ragioneSociale, fatturato, dataInserimento, dataUltimoContatto, page, size, sortBy);
     }
 
     @GetMapping("/{id}")
@@ -51,46 +54,6 @@ public class ClientiController {
     @PreAuthorize("hasAuthority('CLIENTI_UPDATE')")
     public Cliente uploadLogo(@PathVariable UUID id, @RequestParam("logo") MultipartFile file) throws IOException {
         return clientiService.uploadAvatar(id, file);
-    }
-
-    @GetMapping("/fatturato")
-    public Page<Cliente> filterByFatturato(
-            @RequestParam double fatturato,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "ragioneSociale") String sortBy
-    ) {
-        return clientiService.filterByFatturato(fatturato, page, size, sortBy);
-    }
-
-    @GetMapping("/data-inserimento")
-    public Page<Cliente> filterByDataInserimento(
-            @RequestParam LocalDate dataInserimento,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "ragioneSociale") String sortBy
-    ) {
-        return clientiService.filterByDataInserimento(dataInserimento, page, size, sortBy);
-    }
-
-    @GetMapping("/data-ultimo-contatto")
-    public Page<Cliente> filterByDaaUltimoContatto(
-            @RequestParam LocalDate dataUltimoContatto,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "ragioneSociale") String sortBy
-    ) {
-        return clientiService.filterByDataUltimoContatto(dataUltimoContatto, page, size, sortBy);
-    }
-
-    @GetMapping("/ragione-sociale")
-    public Page<Cliente> filterByRagioneSociale(
-            @RequestParam String ragioneSociale,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "ragioneSociale") String sortBy
-    ) {
-        return clientiService.filterByRagioneSociale(ragioneSociale, page, size, sortBy);
     }
 
 }
