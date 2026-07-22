@@ -1,6 +1,7 @@
 package gestione.elettrica.gestione_energia_elettrica.controllers;
 
 
+import gestione.elettrica.gestione_energia_elettrica.eccezioni.FileUpload;
 import gestione.elettrica.gestione_energia_elettrica.entities.Cliente;
 import gestione.elettrica.gestione_energia_elettrica.payloads.ClientiDTO;
 import gestione.elettrica.gestione_energia_elettrica.services.ClientiService;
