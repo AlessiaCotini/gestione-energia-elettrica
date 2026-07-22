@@ -89,7 +89,7 @@ public class FatturaController {
         return fatturaService.update(id, fattura);
     }
 
-    @GetMapping
+    @GetMapping("/search")
     @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
     public List<Fattura> search(
 
