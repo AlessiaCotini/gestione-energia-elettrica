@@ -1,14 +1,20 @@
 package gestione.elettrica.gestione_energia_elettrica.controllers;
 
+import gestione.elettrica.gestione_energia_elettrica.entities.Role;
 import gestione.elettrica.gestione_energia_elettrica.entities.User;
-import gestione.elettrica.gestione_energia_elettrica.payloads.LoginRispostaDto;
-import gestione.elettrica.gestione_energia_elettrica.payloads.UserResponseDTO;
-import gestione.elettrica.gestione_energia_elettrica.payloads.UserLoginDTO;
+import gestione.elettrica.gestione_energia_elettrica.payloads.*;
 import gestione.elettrica.gestione_energia_elettrica.services.AuthService;
 import gestione.elettrica.gestione_energia_elettrica.services.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
@@ -30,7 +36,14 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public User register(@RequestBody @Validated UserResponseDTO body) {
-        return userService.save(body);
+    public UserResponseDTO register(@RequestBody @Validated UserRegisterDTO body) {
+        User savedUser = userService.save(body);
+        return mapToDTO(savedUser);
+    }
+
+    private UserResponseDTO mapToDTO(User user) {
+        Set<String> ruoliNames = user.getRuoli().stream().map(Role::getNomeRuolo).collect(Collectors.toSet());
+        Set<String> autorizzazioniNames = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
+        return new UserResponseDTO(user.getUsername(), user.getEmail(), user.getName(), user.getSurname(), user.getAvatar(), ruoliNames, autorizzazioniNames);
     }
 }

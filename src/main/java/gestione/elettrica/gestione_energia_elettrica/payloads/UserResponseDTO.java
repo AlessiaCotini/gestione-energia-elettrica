@@ -8,9 +8,9 @@ import java.util.Set;
 public record UserResponseDTO(
         String username,
         String email,
-        String password,
         String name,
         String surname,
+        String avatar,
         Set<String> ruoli,
         Set<String> autorizzazioni
 ) {}
