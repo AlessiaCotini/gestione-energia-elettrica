@@ -2,14 +2,17 @@ package gestione.elettrica.gestione_energia_elettrica.controllers;
 
 import gestione.elettrica.gestione_energia_elettrica.entities.User;
 import gestione.elettrica.gestione_energia_elettrica.payloads.AggiornoRuoloUserDTO;
+import gestione.elettrica.gestione_energia_elettrica.payloads.UpdateUserDTO;
 import gestione.elettrica.gestione_energia_elettrica.payloads.UserResponseDTO;
 import gestione.elettrica.gestione_energia_elettrica.services.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -46,6 +49,18 @@ public class UserController {
             @RequestBody AggiornoRuoloUserDTO dto) {
 
         User updatedUser = userService.updateUserRoles(userId, dto.roleIds());
+        return ResponseEntity.ok(mapToDTO(updatedUser));
+    }
+
+    //GESTISCO CAMBIO
+
+    @PutMapping("/{userId}")
+    @PreAuthorize("hasAuthority('GESTISCI_UTENTI')")
+    public ResponseEntity<UserResponseDTO> updateUser(
+            @PathVariable UUID userId,
+            @RequestBody @Validated UpdateUserDTO body) {
+
+        User updatedUser = userService.findByIdAndUpdate(userId, body);
         return ResponseEntity.ok(mapToDTO(updatedUser));
     }
 

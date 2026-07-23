@@ -11,7 +11,7 @@ import java.util.UUID;
 @Table(name = "clienti")
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"sedeOperativa", "sedeLegale"})
 @NoArgsConstructor
 public class Cliente {
 
@@ -71,6 +71,8 @@ public class Cliente {
     @ManyToOne
     @JoinColumn(name = "sede_legale", nullable = false)
     private Indirizzo sedeLegale;
+
+
 
     public Cliente(TipoCliente tipoCliente, String ragioneSociale, String pIva, String email, LocalDate dataUltimoContatto,
                    double fatturatoAnnuale, String pec, String telefono,

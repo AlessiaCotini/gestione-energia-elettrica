@@ -18,7 +18,7 @@ public class Role {
 
     @Id
     @GeneratedValue
-    @Column(name = "role_id")
+    @Column(name = "ruolo_id")
     private UUID ruoloId;
 
     @Column(nullable = false)
@@ -34,7 +34,7 @@ public class Role {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "ruoli_autorizzazioni",
-            joinColumns = @JoinColumn(name = "ruoloId"),
+            joinColumns = @JoinColumn(name = "ruolo_id"),
             inverseJoinColumns = @JoinColumn(name = "autorizzazioneId")
     )
     private

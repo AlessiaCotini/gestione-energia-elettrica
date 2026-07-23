@@ -7,6 +7,8 @@ import gestione.elettrica.gestione_energia_elettrica.eccezioni.AccessDenied;
 import gestione.elettrica.gestione_energia_elettrica.eccezioni.NotFound;
 import gestione.elettrica.gestione_energia_elettrica.entities.Role;
 import gestione.elettrica.gestione_energia_elettrica.entities.User;
+import gestione.elettrica.gestione_energia_elettrica.payloads.UpdateUserDTO;
+import gestione.elettrica.gestione_energia_elettrica.payloads.UserRegisterDTO;
 import gestione.elettrica.gestione_energia_elettrica.payloads.UserResponseDTO;
 import gestione.elettrica.gestione_energia_elettrica.repositories.RoleRepository;
 import gestione.elettrica.gestione_energia_elettrica.repositories.UserRepository;
@@ -55,7 +57,7 @@ public class UserService {
         return userRepository.findAll(pageable);
     }
 
-    public User save(UserResponseDTO body) {
+    public User save(UserRegisterDTO body) {
         if (this.userRepository.existsByEmail(body.email())) {
             throw new AccessDenied("Email già in utilizzo");
         }
@@ -86,7 +88,7 @@ public class UserService {
     }
 
 
-    public User findByIdAndUpdate(UUID userId, UserResponseDTO body) {
+    public User findByIdAndUpdate(UUID userId, UpdateUserDTO body) {
         User trovato = this.findById(userId);
 
         if (!trovato.getEmail().equals(body.email()) && this.userRepository.existsByEmail(body.email())) {
@@ -121,6 +123,5 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    //ADMIN DEVE POTER INVIARE LA MAIL
 }
 
