@@ -38,8 +38,8 @@ public class ClientiService {
     }
 
     public Cliente save(ClientiDTO payload) {
-        if (this.clientiRepository.existsByPIva(payload.pIva())) {
-            throw new BadRequest("La partita IVA " + payload.pIva() + " risulta già registrata!");
+        if (this.clientiRepository.existsByPartitaIva(payload.partitaIva())) {
+            throw new BadRequest("La partita IVA " + payload.partitaIva() + " risulta già registrata!");
         }
         if (this.clientiRepository.existsByEmail(payload.email())) {
             throw new BadRequest("La email " + payload.email() + " risulta già registrata!");
@@ -54,7 +54,7 @@ public class ClientiService {
         Cliente cliente = new Cliente(
                 payload.tipoCliente(),
                 payload.ragioneSociale(),
-                payload.pIva(),
+                payload.partitaIva(),
                 payload.email(),
                 null,
                 payload.fatturatoAnnuale(),
@@ -65,7 +65,8 @@ public class ClientiService {
                 payload.cognomeContatto(),
                 payload.telefonoContatto(),
                 payload.sedeOperativa() != null ? indirizzoService.findById(payload.sedeOperativa()) : null,
-                payload.sedeLegale() != null ? indirizzoService.findById(payload.sedeLegale()) : null
+                payload.sedeLegale() != null ? indirizzoService.findById(payload.sedeLegale()) : null,
+                payload.logoAziendale()
         );
 
         return clientiRepository.save(cliente);

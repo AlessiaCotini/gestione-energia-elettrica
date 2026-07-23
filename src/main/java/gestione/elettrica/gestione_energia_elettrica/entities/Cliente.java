@@ -28,7 +28,7 @@ public class Cliente {
     private String ragioneSociale;
 
     @Column(name = "p_iva", nullable = false, unique = true)
-    private String pIva;
+    private String partitaIva;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -73,13 +73,12 @@ public class Cliente {
     private Indirizzo sedeLegale;
 
 
-
-    public Cliente(TipoCliente tipoCliente, String ragioneSociale, String pIva, String email, LocalDate dataUltimoContatto,
+    public Cliente(TipoCliente tipoCliente, String ragioneSociale, String partitaIva, String email, LocalDate dataUltimoContatto,
                    double fatturatoAnnuale, String pec, String telefono,
                    String emailContatto, String nomeContatto, String cognomeContatto,
-                   String telefonoContatto, Indirizzo sedeOperativa, Indirizzo sedeLegale) {
+                   String telefonoContatto, Indirizzo sedeOperativa, Indirizzo sedeLegale, String logoAziendale) {
         this.ragioneSociale = ragioneSociale;
-        this.pIva = pIva;
+        this.partitaIva = partitaIva;
         this.email = email;
         this.dataInserimento = LocalDate.now();
         this.dataUltimoContatto = dataUltimoContatto;
@@ -93,5 +92,6 @@ public class Cliente {
         this.tipoCliente = tipoCliente;
         this.sedeOperativa = sedeOperativa;
         this.sedeLegale = sedeLegale;
+        this.logoAziendale = logoAziendale;
     }
 }

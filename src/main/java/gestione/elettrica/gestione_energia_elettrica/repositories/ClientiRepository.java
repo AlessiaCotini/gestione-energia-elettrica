@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface ClientiRepository extends JpaRepository<Cliente, UUID>, JpaSpecificationExecutor<Cliente> {
 
-    boolean existsByPIva(String pIva);
+    boolean existsByPartitaIva(String partitaIva);
 
     boolean existsByEmail(String email);
 

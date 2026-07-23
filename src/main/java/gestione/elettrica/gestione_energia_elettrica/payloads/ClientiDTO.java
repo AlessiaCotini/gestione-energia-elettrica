@@ -1,7 +1,10 @@
 package gestione.elettrica.gestione_energia_elettrica.payloads;
 
 import gestione.elettrica.gestione_energia_elettrica.enums.TipoCliente;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
@@ -14,7 +17,7 @@ public record ClientiDTO(
 
         @NotBlank(message = "La partita IVA è obbligatoria")
         @Size(min = 11, max = 11, message = "La partita IVA deve essere di 11 caratteri")
-        String pIva,
+        String partitaIva,
 
         @NotBlank(message = "L'email aziendale è obbligatoria")
         @Email(message = "Inserire un indirizzo email valido")
@@ -42,8 +45,13 @@ public record ClientiDTO(
         @NotBlank(message = "Il telefono del contatto è obbligatorio")
         String telefonoContatto,
 
+        @NotNull(message = "La sede operativa è obbligatoria")
         UUID sedeOperativa,
 
-        UUID sedeLegale
+        @NotNull(message = "La sede legale è obbligatoria")
+        UUID sedeLegale,
+
+        @NotBlank(message = "Il logo è obbligatorio")
+        String logoAziendale
 ) {
 }
