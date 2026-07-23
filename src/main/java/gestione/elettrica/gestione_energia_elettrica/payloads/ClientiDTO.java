@@ -20,6 +20,7 @@ public record ClientiDTO(
         @Email(message = "Inserire un indirizzo email valido")
         String email,
 
+        @NotNull(message = "Inserire fatturato annuale")
         double fatturatoAnnuale,
 
         @NotBlank(message = "La PEC è obbligatoria")
@@ -42,8 +43,10 @@ public record ClientiDTO(
         @NotBlank(message = "Il telefono del contatto è obbligatorio")
         String telefonoContatto,
 
+        @NotNull(message = "Inserire sede operativa")
         UUID sedeOperativa,
 
+        @NotNull(message = "Inserire sede legale")
         UUID sedeLegale
 ) {
 }

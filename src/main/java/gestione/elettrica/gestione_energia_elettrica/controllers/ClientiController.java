@@ -1,18 +1,21 @@
 package gestione.elettrica.gestione_energia_elettrica.controllers;
 
 
+import gestione.elettrica.gestione_energia_elettrica.eccezioni.Validation;
 import gestione.elettrica.gestione_energia_elettrica.entities.Cliente;
 import gestione.elettrica.gestione_energia_elettrica.payloads.ClientiDTO;
 import gestione.elettrica.gestione_energia_elettrica.services.ClientiService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -45,13 +48,20 @@ public class ClientiController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public Cliente createCliente(@RequestBody @Validated ClientiDTO payload) {
+    @PreAuthorize("hasAuthority('ADMIN', 'CLIENTI_CREATE')")
+    public Cliente createCliente(@RequestBody @Validated ClientiDTO payload, BindingResult validResult) {
+        if (validResult.hasErrors()) {
+            List<String> errorsList = validResult.getFieldErrors()
+                    .stream()
+                    .map(fieldError -> fieldError.getDefaultMessage())
+                    .toList();
+            throw new Validation(errorsList);
+        }
         return clientiService.save(payload);
     }
 
     @PatchMapping("/{id}/logo")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN', 'CLIENTI_UPDATE')")
     public Cliente uploadLogo(@PathVariable UUID id, @RequestParam("logo") MultipartFile file) throws IOException {
         return clientiService.uploadAvatar(id, file);
     }
