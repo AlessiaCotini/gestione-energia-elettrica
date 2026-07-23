@@ -16,11 +16,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final TokenFilter tokenFilter;
 
-    @Bean
-    public PasswordEncoder getBCrypt() {
-        return new BCryptPasswordEncoder(12);
+    public SecurityConfig(TokenFilter tokenFilter) {
+        this.tokenFilter = tokenFilter;
     }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -32,6 +33,8 @@ public class SecurityConfig {
         httpSecurity.csrf(csrf -> csrf.disable());
 
         httpSecurity.authorizeHttpRequests(req -> req.requestMatchers("/**").permitAll());
+
+        httpSecurity.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
