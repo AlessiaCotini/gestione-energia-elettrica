@@ -1,5 +1,6 @@
 package gestione.elettrica.gestione_energia_elettrica.controllers;
 
+import gestione.elettrica.gestione_energia_elettrica.eccezioni.Validation;
 import gestione.elettrica.gestione_energia_elettrica.entities.StatoFattura;
 import gestione.elettrica.gestione_energia_elettrica.payloads.StatoFatturaDTO;
 import gestione.elettrica.gestione_energia_elettrica.payloads.StatoFatturaRespDTO;
@@ -7,6 +8,7 @@ import gestione.elettrica.gestione_energia_elettrica.payloads.UpdateStatoFattura
 import gestione.elettrica.gestione_energia_elettrica.services.StatoFatturaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +40,14 @@ public class StatoFatturaController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyAuthority('CREATE_STATO_FATTURA','ADMIN')")
-    public StatoFatturaRespDTO save(@RequestBody @Validated StatoFatturaDTO body) {
+    public StatoFatturaRespDTO save(@RequestBody @Validated StatoFatturaDTO body, BindingResult validResult) {
+        if (validResult.hasErrors()) {
+            List<String> errorsList = validResult.getFieldErrors()
+                    .stream()
+                    .map(fieldError -> fieldError.getDefaultMessage())
+                    .toList();
+            throw new Validation(errorsList);
+        }
 
         StatoFattura stato = new StatoFattura();
         stato.setNome(body.nome());

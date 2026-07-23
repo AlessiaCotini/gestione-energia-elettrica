@@ -1,5 +1,6 @@
 package gestione.elettrica.gestione_energia_elettrica.controllers;
 
+import gestione.elettrica.gestione_energia_elettrica.eccezioni.Validation;
 import gestione.elettrica.gestione_energia_elettrica.entities.Cliente;
 import gestione.elettrica.gestione_energia_elettrica.entities.Fattura;
 import gestione.elettrica.gestione_energia_elettrica.entities.StatoFattura;
@@ -12,6 +13,7 @@ import gestione.elettrica.gestione_energia_elettrica.services.StatoFatturaServic
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,8 +55,14 @@ public class FatturaController {
     @PostMapping
     @PreAuthorize("hasAnyAuthority('CREATE_FATTURA','ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    public FatturaRespDTO save(@RequestBody @Validated FatturaDTO body) {
-
+    public FatturaRespDTO save(@RequestBody @Validated FatturaDTO body, BindingResult validResult) {
+        if (validResult.hasErrors()) {
+            List<String> errorsList = validResult.getFieldErrors()
+                    .stream()
+                    .map(fieldError -> fieldError.getDefaultMessage())
+                    .toList();
+            throw new Validation(errorsList);
+        }
         Cliente cliente = clienteService.findById(body.clienteId());
         StatoFattura stato = statoFatturaService.findById(body.statoFatturaId());
 
