@@ -39,7 +39,8 @@ public class UserController {
         Page<UserResponseDTO> usersPage = userService.findAll(pageable)
                 .map(this::mapToDTO);
 
-        return ResponseEntity.ok(usersPage);    }
+        return ResponseEntity.ok(usersPage);
+    }
 
     // ASSEGNA RUOLI
     @PutMapping("/{userId}/ruoli")
@@ -66,15 +67,18 @@ public class UserController {
 
     // CONVERTO User IN DTO
     private UserResponseDTO mapToDTO(User user) {
-        Set<String> ruoliNames = user.getRuoli().stream()
+        Set<String> ruoliNames = user.getRuoli()
+                .stream()
                 .map(r -> r.getNomeRuolo())
                 .collect(Collectors.toSet());
 
-        Set<String> autorizzazioniNames = user.getAuthorities().stream()
+        Set<String> autorizzazioniNames = user.getAuthorities()
+                .stream()
                 .map(a -> a.getAuthority())
                 .collect(Collectors.toSet());
 
         return new UserResponseDTO(
+                user.getUserId(),
                 user.getUsername(),
                 user.getEmail(),
                 user.getName(),
