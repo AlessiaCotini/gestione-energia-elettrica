@@ -10,7 +10,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
@@ -53,7 +56,7 @@ public class User implements UserDetails {
         this.password = password;
         this.name = name;
         this.surname = surname;
-        this.avatar = avatar;
+        this.avatar = "https://ui-avatars.com/api/?name=" + name + "+" + surname;
     }
 
     @Override
