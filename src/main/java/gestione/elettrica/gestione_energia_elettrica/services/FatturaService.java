@@ -77,7 +77,8 @@ public class FatturaService {
             Integer anno
     ) {
 
-        Specification<Fattura> specification = null;
+        Specification<Fattura> specification =
+                (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
 
         if (clienteId != null) {
             specification = specification.and(
