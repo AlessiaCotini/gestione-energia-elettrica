@@ -38,7 +38,8 @@ public class ClientiController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "ragioneSociale") String sortBy
     ) {
-        return clientiService.findAllFiltered(ragioneSociale, fatturato, dataInserimento, dataUltimoContatto, page, size, sortBy);
+        return clientiService.findAllFiltered(ragioneSociale, fatturato, dataInserimento, dataUltimoContatto, page,
+                size, sortBy);
     }
 
     @GetMapping("/{id}")
@@ -48,7 +49,7 @@ public class ClientiController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('ADMIN', 'CLIENTI_CREATE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'CLIENTI_CREATE')")
     public Cliente createCliente(@RequestBody @Validated ClientiDTO payload, BindingResult validResult) {
         if (validResult.hasErrors()) {
             List<String> errorsList = validResult.getFieldErrors()
@@ -61,7 +62,7 @@ public class ClientiController {
     }
 
     @PatchMapping("/{id}/logo")
-    @PreAuthorize("hasAuthority('ADMIN', 'CLIENTI_UPDATE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'CLIENTI_UPDATE')")
     public Cliente uploadLogo(@PathVariable UUID id, @RequestParam("logo") MultipartFile file) throws IOException {
         return clientiService.uploadAvatar(id, file);
     }

@@ -38,8 +38,8 @@ public class ClientiService {
     }
 
     public Cliente save(ClientiDTO payload) {
-        if (this.clientiRepository.existsByPIva(payload.pIva())) {
-            throw new BadRequest("La partita IVA " + payload.pIva() + " risulta già registrata!");
+        if (this.clientiRepository.existsByPartitaIva(payload.partitaIva())) {
+            throw new BadRequest("La partita IVA " + payload.partitaIva() + " risulta già registrata!");
         }
         if (this.clientiRepository.existsByEmail(payload.email())) {
             throw new BadRequest("La email " + payload.email() + " risulta già registrata!");
@@ -54,7 +54,7 @@ public class ClientiService {
         Cliente cliente = new Cliente(
                 payload.tipoCliente(),
                 payload.ragioneSociale(),
-                payload.pIva(),
+                payload.partitaIva(),
                 payload.email(),
                 null,
                 payload.fatturatoAnnuale(),
@@ -95,9 +95,12 @@ public class ClientiService {
     public Cliente uploadAvatar(UUID clienteId, MultipartFile file) throws IOException {
         Cliente cliente = clientiRepository.findById(clienteId)
                 .orElseThrow(() -> new NotFound("Cliente non trovato"));
-        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
-        String url = uploadResult.get("secure_url").toString();
-        String publicId = uploadResult.get("public_id").toString();
+        Map uploadResult = cloudinary.uploader()
+                .upload(file.getBytes(), ObjectUtils.emptyMap());
+        String url = uploadResult.get("secure_url")
+                .toString();
+        String publicId = uploadResult.get("public_id")
+                .toString();
 
         cliente.setLogoAziendale(url);
 
