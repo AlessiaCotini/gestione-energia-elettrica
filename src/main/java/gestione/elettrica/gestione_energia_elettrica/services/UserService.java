@@ -9,7 +9,6 @@ import gestione.elettrica.gestione_energia_elettrica.entities.Role;
 import gestione.elettrica.gestione_energia_elettrica.entities.User;
 import gestione.elettrica.gestione_energia_elettrica.payloads.UpdateUserDTO;
 import gestione.elettrica.gestione_energia_elettrica.payloads.UserRegisterDTO;
-import gestione.elettrica.gestione_energia_elettrica.payloads.UserResponseDTO;
 import gestione.elettrica.gestione_energia_elettrica.repositories.RoleRepository;
 import gestione.elettrica.gestione_energia_elettrica.repositories.UserRepository;
 import org.springframework.data.domain.Page;
@@ -42,15 +41,17 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 
-        Map uploadResult = cloudinaryConfig.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
-        String url = uploadResult.get("secure_url").toString();
-        String publicId = uploadResult.get("public_id").toString();
+        Map uploadResult = cloudinaryConfig.uploader()
+                .upload(file.getBytes(), ObjectUtils.emptyMap());
+        String url = uploadResult.get("secure_url")
+                .toString();
+        String publicId = uploadResult.get("public_id")
+                .toString();
 
         user.setAvatar(url);
 
         return userRepository.save(user);
     }
-
 
 
     public Page<User> findAll(Pageable pageable) {
@@ -68,6 +69,12 @@ public class UserService {
         nuovo.setPassword(this.bcrypt.encode(body.password()));
         nuovo.setName(body.name());
         nuovo.setSurname(body.surname());
+        nuovo.setAvatar(
+                "https://ui-avatars.com/api/?name="
+                        + body.name()
+                        + "+"
+                        + body.surname()
+        );
 
         Role ruolo = roleRepository.findByNomeRuolo("USER")
                 .orElseThrow(() -> new NotFound("Ruolo USER non trovato"));
@@ -91,13 +98,15 @@ public class UserService {
     public User findByIdAndUpdate(UUID userId, UpdateUserDTO body) {
         User trovato = this.findById(userId);
 
-        if (!trovato.getEmail().equals(body.email()) && this.userRepository.existsByEmail(body.email())) {
+        if (!trovato.getEmail()
+                .equals(body.email()) && this.userRepository.existsByEmail(body.email())) {
             throw new AccessDenied("Email già in utilizzo");
         }
 
         trovato.setUsername(body.username());
         trovato.setEmail(body.email());
-        if (body.password() != null && !body.password().isBlank()) {
+        if (body.password() != null && !body.password()
+                .isBlank()) {
             trovato.setPassword(this.bcrypt.encode(body.password()));
         }
         trovato.setName(body.name());
@@ -117,8 +126,10 @@ public class UserService {
 
         List<Role> newRoles = roleRepository.findAllById(roleId);
 
-        user.getRuoli().clear();
-        user.getRuoli().addAll(newRoles);
+        user.getRuoli()
+                .clear();
+        user.getRuoli()
+                .addAll(newRoles);
 
         return userRepository.save(user);
     }
