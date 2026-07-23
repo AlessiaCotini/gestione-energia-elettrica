@@ -46,6 +46,40 @@ public class FatturaController {
         return fatturaService.findAll(page, size, orderBy);
     }
 
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
+    public List<Fattura> search(
+
+            @RequestParam(required = false)
+            UUID clienteId,
+            @RequestParam(required = false)
+            UUID statoId,
+            @RequestParam(required = false)
+            LocalDate data,
+            @RequestParam(required = false)
+            LocalDate start,
+            @RequestParam(required = false)
+            LocalDate end,
+            @RequestParam(required = false)
+            BigDecimal min,
+            @RequestParam(required = false)
+            BigDecimal max,
+            @RequestParam(required = false)
+            Integer anno
+    ) {
+
+        return fatturaService.search(
+                clienteId,
+                statoId,
+                data,
+                start,
+                end,
+                min,
+                max,
+                anno
+        );
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
     public Fattura getFatturaById(@PathVariable UUID id) {
@@ -99,39 +133,6 @@ public class FatturaController {
         return fatturaService.update(id, fattura);
     }
 
-    @GetMapping("/search")
-    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
-    public List<Fattura> search(
-
-            @RequestParam(required = false)
-            UUID clienteId,
-            @RequestParam(required = false)
-            UUID statoId,
-            @RequestParam(required = false)
-            LocalDate data,
-            @RequestParam(required = false)
-            LocalDate start,
-            @RequestParam(required = false)
-            LocalDate end,
-            @RequestParam(required = false)
-            BigDecimal min,
-            @RequestParam(required = false)
-            BigDecimal max,
-            @RequestParam(required = false)
-            Integer anno
-    ) {
-
-        return fatturaService.search(
-                clienteId,
-                statoId,
-                data,
-                start,
-                end,
-                min,
-                max,
-                anno
-        );
-    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

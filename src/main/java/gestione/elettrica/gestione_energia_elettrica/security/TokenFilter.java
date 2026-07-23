@@ -47,8 +47,10 @@ public class TokenFilter extends OncePerRequestFilter {
             UUID userId = this.jwtTools.checkIdDalToken(accessToken);
             User autenticato = this.userService.findById(userId);
 
-            Authentication authentication = new UsernamePasswordAuthenticationToken(autenticato, null , autenticato.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(autenticato, null,
+                    autenticato.getAuthorities());
+            SecurityContextHolder.getContext()
+                    .setAuthentication(authentication);
 
             // ARRIVO AL CONTROLLER
             filterChain.doFilter(request, response);
@@ -56,7 +58,11 @@ public class TokenFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"Token non valido\"}");
+            response.getWriter()
+                    .write(
+                            "{\"error\": \"Token non valido\", \"message\": \"" +
+                                    e.getMessage() + "\"}"
+                    );
         }
     }
 
