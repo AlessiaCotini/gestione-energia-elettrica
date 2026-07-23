@@ -36,6 +36,8 @@ public class SecurityConfig {
 
         httpSecurity.csrf(csrf -> csrf.disable());
 
+        httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+
         httpSecurity.authorizeHttpRequests(req -> req.requestMatchers("/**").permitAll());
 
         httpSecurity.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
