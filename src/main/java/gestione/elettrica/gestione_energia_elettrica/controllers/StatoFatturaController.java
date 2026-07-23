@@ -5,6 +5,7 @@ import gestione.elettrica.gestione_energia_elettrica.payloads.StatoFatturaDTO;
 import gestione.elettrica.gestione_energia_elettrica.payloads.StatoFatturaRespDTO;
 import gestione.elettrica.gestione_energia_elettrica.payloads.UpdateStatoFatturaDTO;
 import gestione.elettrica.gestione_energia_elettrica.services.StatoFatturaService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,7 @@ public class StatoFatturaController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyAuthority('CREATE_STATO_FATTURA','ADMIN')")
     public StatoFatturaRespDTO save(@RequestBody @Validated StatoFatturaDTO body) {
 
@@ -59,6 +61,7 @@ public class StatoFatturaController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyAuthority('DELETE_STATO_FATTURA','ADMIN')")
     public void delete(@PathVariable UUID id) {
         statoFatturaService.delete(id);

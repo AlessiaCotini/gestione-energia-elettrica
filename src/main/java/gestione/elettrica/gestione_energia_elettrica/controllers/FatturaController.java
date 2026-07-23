@@ -10,6 +10,7 @@ import gestione.elettrica.gestione_energia_elettrica.services.ClientiService;
 import gestione.elettrica.gestione_energia_elettrica.services.FatturaService;
 import gestione.elettrica.gestione_energia_elettrica.services.StatoFatturaService;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +52,7 @@ public class FatturaController {
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('CREATE_FATTURA','ADMIN')")
+    @ResponseStatus(HttpStatus.CREATED)
     public FatturaRespDTO save(@RequestBody @Validated FatturaDTO body) {
 
         Cliente cliente = clienteService.findById(body.clienteId());
@@ -124,6 +126,7 @@ public class FatturaController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyAuthority('DELETE_FATTURA','ADMIN')")
     public void delete(@PathVariable UUID id) {
         fatturaService.delete(id);
