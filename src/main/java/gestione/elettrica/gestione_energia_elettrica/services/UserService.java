@@ -3,6 +3,7 @@ package gestione.elettrica.gestione_energia_elettrica.services;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import gestione.elettrica.gestione_energia_elettrica.configuration.CloudinaryConfig;
+import gestione.elettrica.gestione_energia_elettrica.configuration.MailgunSender;
 import gestione.elettrica.gestione_energia_elettrica.eccezioni.AccessDenied;
 import gestione.elettrica.gestione_energia_elettrica.eccezioni.NotFound;
 import gestione.elettrica.gestione_energia_elettrica.entities.Role;
@@ -29,12 +30,14 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder bcrypt;
     private final Cloudinary cloudinaryConfig;
+    private final MailgunSender mailgunSender;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder bcrypt, CloudinaryConfig cloudinaryConfig, Cloudinary cloudinaryConfig1) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder bcrypt, CloudinaryConfig cloudinaryConfig, Cloudinary cloudinaryConfig1, MailgunSender mailgunSender) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.bcrypt = bcrypt;
         this.cloudinaryConfig = cloudinaryConfig1;
+        this.mailgunSender = mailgunSender;
     }
 
     public User uploadAvatar(UUID userId, MultipartFile file) throws IOException {
@@ -80,6 +83,7 @@ public class UserService {
                 .orElseThrow(() -> new NotFound("Ruolo USER non trovato"));
 
         nuovo.setRuoli(Set.of(ruolo));
+        mailgunSender.sendRegistrationEmail(nuovo);
 
         return userRepository.save(nuovo);
     }
