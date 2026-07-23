@@ -22,7 +22,6 @@ import java.util.Set;
 public class CsvRunner implements CommandLineRunner {
 
 
-
     private final ImportCsvService importCsvService;
     private final ProvinciaRepository provinciaRepository;
     private final ComuneRepository comuneRepository;
@@ -70,6 +69,7 @@ public class CsvRunner implements CommandLineRunner {
 
         Autorizzazione clientiCreate = createAutorizzazioneIfNotFound("CLIENTI_CREATE");
         Autorizzazione clientiUpdate = createAutorizzazioneIfNotFound("CLIENTI_UPDATE");
+        Autorizzazione clientiPatchLogo = createAutorizzazioneIfNotFound("CLIENTI_PATCH_LOGO");
 
 
         Role userRole = new Role("USER");
@@ -83,7 +83,7 @@ public class CsvRunner implements CommandLineRunner {
         adminRole.setAutorizzazioni(Set.of(
                 readFattura, createFattura, updateFattura, deleteFattura,
                 readStatoFattura, createStatoFattura, updateStatoFattura, deleteStatoFattura,
-                gestisciUtenti, assegnaRuoli, clientiCreate, clientiUpdate
+                gestisciUtenti, assegnaRuoli, clientiCreate, clientiUpdate, clientiPatchLogo
         ));
         roleRepository.save(adminRole);
     }

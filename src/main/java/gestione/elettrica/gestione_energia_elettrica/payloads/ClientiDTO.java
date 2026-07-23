@@ -49,9 +49,6 @@ public record ClientiDTO(
         UUID sedeOperativa,
 
         @NotNull(message = "La sede legale è obbligatoria")
-        UUID sedeLegale,
-
-        @NotBlank(message = "Il logo è obbligatorio")
-        String logoAziendale
+        UUID sedeLegale
 ) {
 }

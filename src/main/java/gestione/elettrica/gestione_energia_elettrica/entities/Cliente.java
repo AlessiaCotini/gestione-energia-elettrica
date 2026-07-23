@@ -76,7 +76,7 @@ public class Cliente {
     public Cliente(TipoCliente tipoCliente, String ragioneSociale, String partitaIva, String email, LocalDate dataUltimoContatto,
                    double fatturatoAnnuale, String pec, String telefono,
                    String emailContatto, String nomeContatto, String cognomeContatto,
-                   String telefonoContatto, Indirizzo sedeOperativa, Indirizzo sedeLegale, String logoAziendale) {
+                   String telefonoContatto, Indirizzo sedeOperativa, Indirizzo sedeLegale) {
         this.ragioneSociale = ragioneSociale;
         this.partitaIva = partitaIva;
         this.email = email;
@@ -92,6 +92,6 @@ public class Cliente {
         this.tipoCliente = tipoCliente;
         this.sedeOperativa = sedeOperativa;
         this.sedeLegale = sedeLegale;
-        this.logoAziendale = logoAziendale;
+        this.logoAziendale = "https://res.cloudinary.com/qqqe0zym/image/upload/v1784802759/user_gzh6cc.png";
     }
 }
