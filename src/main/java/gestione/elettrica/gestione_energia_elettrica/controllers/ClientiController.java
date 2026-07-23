@@ -45,13 +45,13 @@ public class ClientiController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('CLIENTI_CREATE')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Cliente createCliente(@RequestBody @Validated ClientiDTO payload) {
         return clientiService.save(payload);
     }
 
     @PatchMapping("/{id}/logo")
-    @PreAuthorize("hasAuthority('CLIENTI_UPDATE')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Cliente uploadLogo(@PathVariable UUID id, @RequestParam("logo") MultipartFile file) throws IOException {
         return clientiService.uploadAvatar(id, file);
     }
