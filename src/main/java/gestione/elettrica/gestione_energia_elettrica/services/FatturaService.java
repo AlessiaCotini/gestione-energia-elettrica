@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,12 +28,24 @@ public class FatturaService {
     }
 
 
-    public Page<Fattura> findAll(int page, int size, String orderBy) {
-        if (size <= 0) size = 10;
-        if (size > 15) size = 15;
-        if (page < 0) page = 0;
+    public Page<Fattura> findAll(
+            int page,
+            int size,
+            String sortBy,
+            String order
+    ) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(orderBy));
+        Sort.Direction direction =
+                order.equalsIgnoreCase("desc")
+                        ? Sort.Direction.DESC
+                        : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(direction, sortBy)
+        );
+
         return fatturaRepository.findAll(pageable);
     }
 
@@ -66,7 +77,11 @@ public class FatturaService {
     }
 
 
-    public List<Fattura> search(
+    public Page<Fattura> search(
+            int page,
+            int size,
+            String sortBy,
+            String order,
             UUID clienteId,
             UUID statoId,
             LocalDate data,
@@ -78,7 +93,8 @@ public class FatturaService {
     ) {
 
         Specification<Fattura> specification =
-                (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
+                (root, query, criteriaBuilder) ->
+                        criteriaBuilder.conjunction();
 
         if (clienteId != null) {
             specification = specification.and(
@@ -91,33 +107,45 @@ public class FatturaService {
                     FatturaSpecification.hasStato(statoId)
             );
         }
+
         if (data != null) {
             specification = specification.and(
                     FatturaSpecification.hasData(data)
             );
         }
+
         if (start != null && end != null) {
             specification = specification.and(
-                    FatturaSpecification.dataBetween(
-                            start,
-                            end
-                    )
+                    FatturaSpecification.dataBetween(start, end)
             );
         }
+
         if (min != null && max != null) {
             specification = specification.and(
-                    FatturaSpecification.importoBetween(
-                            min,
-                            max
-                    )
+                    FatturaSpecification.importoBetween(min, max)
             );
         }
+
         if (anno != null) {
             specification = specification.and(
                     FatturaSpecification.hasAnno(anno)
             );
         }
 
-        return fatturaRepository.findAll(specification);
+        Sort.Direction direction =
+                order.equalsIgnoreCase("desc")
+                        ? Sort.Direction.DESC
+                        : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(direction, sortBy)
+        );
+
+        return fatturaRepository.findAll(
+                specification,
+                pageable
+        );
     }
 }

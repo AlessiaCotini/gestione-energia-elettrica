@@ -35,7 +35,7 @@ public class UserController {
 
     // LISTA UTENTI
     @GetMapping
-    @PreAuthorize("hasAuthority('GESTISCI_UTENTI')")
+    @PreAuthorize("hasAnyAuthority('GESTISCI_UTENTI','ADMIN')")
     public ResponseEntity<Page<UserResponseDTO>> getAllUsers(Pageable pageable) {
         Page<UserResponseDTO> usersPage = userService.findAll(pageable)
                 .map(this::mapToDTO);
@@ -45,7 +45,7 @@ public class UserController {
 
     // ASSEGNA RUOLI
     @PutMapping("/{userId}/ruoli")
-    @PreAuthorize("hasAuthority('ASSEGNA_RUOLI')")
+    @PreAuthorize("hasAnyAuthority('ASSEGNA_RUOLI','ADMIN')")
     public ResponseEntity<UserResponseDTO> updateUserRoles(
             @PathVariable UUID userId,
             @RequestBody AggiornoRuoloUserDTO dto) {
@@ -57,7 +57,7 @@ public class UserController {
     //GESTISCO CAMBIO
 
     @PutMapping("/{userId}")
-    @PreAuthorize("hasAuthority('GESTISCI_UTENTI')")
+    @PreAuthorize("hasAnyAuthority('GESTISCI_UTENTI','ADMIN')")
     public ResponseEntity<UserResponseDTO> updateUser(
             @PathVariable UUID userId,
             @RequestBody @Validated UpdateUserDTO body) {

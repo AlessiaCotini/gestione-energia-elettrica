@@ -41,41 +41,49 @@ public class FatturaController {
     public Page<Fattura> getAllFatture(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "data") String orderBy
-    ) {
-        return fatturaService.findAll(page, size, orderBy);
-    }
 
-    @GetMapping("/search")
-    @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
-    public List<Fattura> search(
+            @RequestParam(defaultValue = "data")
+            String sortBy,
+
+            @RequestParam(defaultValue = "asc")
+            String order,
 
             @RequestParam(required = false)
             UUID clienteId,
+
             @RequestParam(required = false)
             UUID statoId,
+
             @RequestParam(required = false)
             LocalDate data,
+
             @RequestParam(required = false)
             LocalDate start,
+
             @RequestParam(required = false)
             LocalDate end,
+
             @RequestParam(required = false)
-            BigDecimal min,
+            BigDecimal minImporto,
+
             @RequestParam(required = false)
-            BigDecimal max,
+            BigDecimal maxImporto,
+
             @RequestParam(required = false)
             Integer anno
     ) {
-
         return fatturaService.search(
+                page,
+                size,
+                sortBy,
+                order,
                 clienteId,
                 statoId,
                 data,
                 start,
                 end,
-                min,
-                max,
+                minImporto,
+                maxImporto,
                 anno
         );
     }

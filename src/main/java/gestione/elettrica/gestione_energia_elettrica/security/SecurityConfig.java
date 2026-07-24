@@ -26,32 +26,46 @@ public class SecurityConfig {
         this.tokenFilter = tokenFilter;
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
-        httpSecurity.formLogin(formLogin -> formLogin.disable());
-
-        httpSecurity.sessionManagement(sessions -> sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        httpSecurity.csrf(csrf -> csrf.disable());
-
-        httpSecurity.authorizeHttpRequests(req -> req.requestMatchers("/**").permitAll());
-
-        httpSecurity.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity
+                .cors(cors -> {
+                })
+                .csrf(csrf -> csrf.disable())
+                .formLogin(formLogin -> formLogin.disable())
+                .sessionManagement(sessions ->
+                        sessions.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authorizeHttpRequests(req ->
+                        req.requestMatchers("/**")
+                                .permitAll()
+                )
+                .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173"));
-        corsConfiguration.setAllowedMethods(List.of("*"));
-        corsConfiguration.setAllowedHeaders(List.of("*"));
+        corsConfiguration.setAllowedOrigins(
+                List.of("http://localhost:5173")
+        );
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        corsConfiguration.setAllowedMethods(
+                List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+        );
+
+        corsConfiguration.setAllowedHeaders(
+                List.of("*")
+        );
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
         source.registerCorsConfiguration("/**", corsConfiguration);
 
         return source;
