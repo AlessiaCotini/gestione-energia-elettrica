@@ -50,6 +50,10 @@ public class CsvRunner implements CommandLineRunner {
 
         initRuoliEAutorizzazioni();
         initIndirizzi();
+        initStatiFattura();
+        initClienti();
+        initFatture();
+        initUsers();
     }
 
     @PrePersist
