@@ -30,17 +30,26 @@ public class FatturaController {
     private final ClientiService clienteService;
     private final StatoFatturaService statoFatturaService;
 
-    public FatturaController(FatturaService fatturaService, ClientiService clienteService, StatoFatturaService statoFatturaService) {
+    public FatturaController(
+            FatturaService fatturaService,
+            ClientiService clienteService,
+            StatoFatturaService statoFatturaService
+    ) {
         this.fatturaService = fatturaService;
         this.clienteService = clienteService;
         this.statoFatturaService = statoFatturaService;
     }
 
+
     @GetMapping
     @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
     public Page<Fattura> getAllFatture(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+
+            @RequestParam(defaultValue = "0")
+            int page,
+
+            @RequestParam(defaultValue = "10")
+            int size,
 
             @RequestParam(defaultValue = "data")
             String sortBy,
@@ -72,6 +81,7 @@ public class FatturaController {
             @RequestParam(required = false)
             Integer anno
     ) {
+
         return fatturaService.search(
                 page,
                 size,
@@ -88,25 +98,46 @@ public class FatturaController {
         );
     }
 
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('READ_FATTURA','ADMIN')")
-    public Fattura getFatturaById(@PathVariable UUID id) {
+    public Fattura getFatturaById(
+            @PathVariable UUID id
+    ) {
         return fatturaService.findById(id);
     }
+
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('CREATE_FATTURA','ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    public FatturaRespDTO save(@RequestBody @Validated FatturaDTO body, BindingResult validResult) {
+    public FatturaRespDTO save(
+            @RequestBody @Validated FatturaDTO body,
+            BindingResult validResult
+    ) {
+
         if (validResult.hasErrors()) {
-            List<String> errorsList = validResult.getFieldErrors()
+
+            List<String> errorsList = validResult
+                    .getFieldErrors()
                     .stream()
-                    .map(fieldError -> fieldError.getDefaultMessage())
+                    .map(fieldError ->
+                            fieldError.getDefaultMessage()
+                    )
                     .toList();
+
             throw new Validation(errorsList);
         }
-        Cliente cliente = clienteService.findById(body.clienteId());
-        StatoFattura stato = statoFatturaService.findById(body.statoFatturaId());
+
+        Cliente cliente =
+                clienteService.findById(
+                        body.clienteId()
+                );
+
+        StatoFattura stato =
+                statoFatturaService.findById(
+                        body.statoFatturaId()
+                );
 
         Fattura fattura = new Fattura(
                 body.data(),
@@ -116,19 +147,34 @@ public class FatturaController {
                 stato
         );
 
-        Fattura saved = fatturaService.save(fattura);
+        Fattura saved =
+                fatturaService.save(fattura);
 
-        return new FatturaRespDTO(saved.getId());
+        return new FatturaRespDTO(
+                saved.getId()
+        );
     }
+
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('UPDATE_FATTURA','ADMIN')")
     public Fattura update(
-            @PathVariable UUID id,
-            @RequestBody @Validated UpdateFatturaDTO body) {
 
-        Cliente cliente = clienteService.findById(body.clienteId());
-        StatoFattura stato = statoFatturaService.findById(body.statoFatturaId());
+            @PathVariable UUID id,
+
+            @RequestBody @Validated UpdateFatturaDTO body
+
+    ) {
+
+        Cliente cliente =
+                clienteService.findById(
+                        body.clienteId()
+                );
+
+        StatoFattura stato =
+                statoFatturaService.findById(
+                        body.statoFatturaId()
+                );
 
         Fattura fattura = new Fattura(
                 body.data(),
@@ -138,14 +184,20 @@ public class FatturaController {
                 stato
         );
 
-        return fatturaService.update(id, fattura);
+        return fatturaService.update(
+                id,
+                fattura
+        );
     }
 
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyAuthority('DELETE_FATTURA','ADMIN')")
-    public void delete(@PathVariable UUID id) {
+    public void delete(
+            @PathVariable UUID id
+    ) {
+
         fatturaService.delete(id);
     }
 }

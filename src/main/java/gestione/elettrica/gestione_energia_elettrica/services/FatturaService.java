@@ -22,11 +22,9 @@ public class FatturaService {
     @Autowired
     private FatturaRepository fatturaRepository;
 
-
     public Fattura save(Fattura fattura) {
         return fatturaRepository.save(fattura);
     }
-
 
     public Page<Fattura> findAll(
             int page,
@@ -34,34 +32,21 @@ public class FatturaService {
             String sortBy,
             String order
     ) {
-
-        Sort.Direction direction =
-                order.equalsIgnoreCase("desc")
-                        ? Sort.Direction.DESC
-                        : Sort.Direction.ASC;
-
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by(direction, sortBy)
-        );
-
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         return fatturaRepository.findAll(pageable);
     }
 
-
     public Fattura findById(UUID id) {
+
         return fatturaRepository.findById(id)
                 .orElseThrow(() -> new NotFound("Fattura non trovata con id: " + id));
     }
 
-
     public Fattura update(
             UUID id,
-            Fattura fatturaAggiornata
-    ) {
+            Fattura fatturaAggiornata) {
         Fattura fattura = findById(id);
-
         fattura.setNumeroFattura(fatturaAggiornata.getNumeroFattura());
         fattura.setData(fatturaAggiornata.getData());
         fattura.setImporto(fatturaAggiornata.getImporto());
@@ -73,6 +58,7 @@ public class FatturaService {
 
     public void delete(UUID id) {
         Fattura fattura = findById(id);
+
         fatturaRepository.delete(fattura);
     }
 
@@ -90,62 +76,52 @@ public class FatturaService {
             BigDecimal min,
             BigDecimal max,
             Integer anno
-    ) {
 
-        Specification<Fattura> specification =
-                (root, query, criteriaBuilder) ->
-                        criteriaBuilder.conjunction();
+    ) {
+        Specification<Fattura> specification = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
 
         if (clienteId != null) {
-            specification = specification.and(
-                    FatturaSpecification.hasCliente(clienteId)
-            );
+            specification = specification.and(FatturaSpecification.hasCliente(clienteId));
         }
+
 
         if (statoId != null) {
-            specification = specification.and(
-                    FatturaSpecification.hasStato(statoId)
-            );
+            specification = specification.and(FatturaSpecification.hasStato(statoId));
         }
 
+
         if (data != null) {
-            specification = specification.and(
-                    FatturaSpecification.hasData(data)
-            );
+            specification = specification.and(FatturaSpecification.hasData(data));
         }
 
         if (start != null && end != null) {
-            specification = specification.and(
-                    FatturaSpecification.dataBetween(start, end)
-            );
+            specification = specification.and(FatturaSpecification.dataBetween(start, end));
+
+        } else if (start != null) {
+            specification = specification.and(FatturaSpecification.dataGreaterThanOrEqualTo(start));
+
+        } else if (end != null) {
+            specification = specification.and(FatturaSpecification.dataLessThanOrEqualTo(end));
         }
+
 
         if (min != null && max != null) {
-            specification = specification.and(
-                    FatturaSpecification.importoBetween(min, max)
-            );
+            specification = specification.and(FatturaSpecification.importoBetween(min, max));
+        } else if (min != null) {
+            specification = specification.and(FatturaSpecification.importoGreaterThanOrEqualTo(min));
+        } else if (max != null) {
+            specification = specification.and(FatturaSpecification.importoLessThanOrEqualTo(max));
         }
-
         if (anno != null) {
-            specification = specification.and(
-                    FatturaSpecification.hasAnno(anno)
-            );
+            specification = specification.and(FatturaSpecification.hasAnno(anno));
         }
 
-        Sort.Direction direction =
-                order.equalsIgnoreCase("desc")
-                        ? Sort.Direction.DESC
-                        : Sort.Direction.ASC;
 
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by(direction, sortBy)
-        );
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
 
-        return fatturaRepository.findAll(
-                specification,
-                pageable
-        );
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        return fatturaRepository.findAll(specification, pageable);
     }
 }
