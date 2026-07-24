@@ -38,7 +38,8 @@ public class AuthController {
         String token = authService.authenticateUserAndGenerateToken(body);
         UUID idUserLoggato = jwtTools.checkIdDalToken(token);
         User userLoggato = userService.findById(idUserLoggato);
-        return new LoginRispostaDto(token, userLoggato.getRuoli());
+        return new LoginRispostaDto(token, userLoggato.getRuoli().stream()
+                .map(Role::getNomeRuolo).toList());
     }
 
     @PostMapping("/register")
