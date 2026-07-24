@@ -6,6 +6,7 @@ import gestione.elettrica.gestione_energia_elettrica.payloads.LoginRispostaDto;
 import gestione.elettrica.gestione_energia_elettrica.payloads.UserLoginDTO;
 import gestione.elettrica.gestione_energia_elettrica.payloads.UserRegisterDTO;
 import gestione.elettrica.gestione_energia_elettrica.payloads.UserResponseDTO;
+import gestione.elettrica.gestione_energia_elettrica.security.JWTTools;
 import gestione.elettrica.gestione_energia_elettrica.services.AuthService;
 import gestione.elettrica.gestione_energia_elettrica.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,16 +25,20 @@ public class AuthController {
 
     private final AuthService authService;
     private final UserService userService;
+    private final JWTTools jwtTools;
 
-    public AuthController(AuthService authService, UserService userService) {
+    public AuthController(AuthService authService, UserService userService, JWTTools jwtTools) {
         this.authService = authService;
         this.userService = userService;
+        this.jwtTools = jwtTools;
     }
 
     @PostMapping("/login")
     public LoginRispostaDto login(@RequestBody @Validated UserLoginDTO body) {
         String token = authService.authenticateUserAndGenerateToken(body);
-        return new LoginRispostaDto(token);
+        UUID idUserLoggato = jwtTools.checkIdDalToken(token);
+        User userLoggato = userService.findById(idUserLoggato);
+        return new LoginRispostaDto(token, userLoggato.getRuoli());
     }
 
     @PostMapping("/register")
